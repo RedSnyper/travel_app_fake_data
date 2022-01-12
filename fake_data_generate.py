@@ -98,15 +98,17 @@ def generate_fake_iternaries(n: int = 1):
                     trek_days = session.query(models.TrekDestination.days).filter(
                         models.TrekDestination.id == trek_id).all()[0][0]
 
-                    start_destination = session.query(models.TrekDestination.title).filter(
+                    start = session.query(models.TrekDestination.title).filter(
                         models.TrekDestination.id == trek_id).all()[0][0].split('To')[0].strip()
 
-                    final_destination = session.query(models.TrekDestination.title).filter(
+                    final = session.query(models.TrekDestination.title).filter(
                         models.TrekDestination.id == trek_id).all()[0][0].split('To')[-1].strip()
 
                     total_cost = session.query(models.TrekDestination.total_cost).filter(
                         models.TrekDestination.id == trek_id).all()[0][0]
 
+                    city_1 = fake_gen.city()
+                    city_2 = fake_gen.city()
                     for i in range(0, trek_days):
                         fake_iten = {
                             'trek_destination_id': trek_id,
@@ -116,13 +118,17 @@ def generate_fake_iternaries(n: int = 1):
                         }
                         if i == 0:
                             fake_iten.update(
-                                {"title": f'{start_destination} To {fake_gen.city()}'})
+                                {"title": f'{start} To {city_1}'})
                         elif i == trek_days - 1:
                             fake_iten.update(
-                                {"title": f'{fake_gen.city()} To {final_destination}'})
+                                {"title": f'{city_1} To {final}'})
                         else:
                             fake_iten.update(
-                                {"title": f'{fake_gen.city()} To {fake_gen.city()}'})
+                                {"title": f'{city_1} To {city_2}'})
+                            city_1 = city_2
+                            city_2 = fake_gen.city()
+                            
+                            
 
                         session.add(models.Itenary(**fake_iten))
                         session.commit()
